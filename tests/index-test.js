@@ -164,6 +164,26 @@ QUnit.module('ember-template-recast', function() {
     );
   });
 
+  QUnit.test('does not modify children of transformed elements', function(assert) {
+    let template = stripIndent`
+      {{#foo-bar}}
+        <form {{action "save" on="submit"}} disabled={{model.isSaving}}>
+        </form>
+      {{/foo-bar}}`;
+
+    let ast = parse(template);
+    ast.body[0].tag = 'a';
+
+    assert.equal(
+      print(ast),
+      stripIndent`
+      {{#a}}
+        <form {{action "save" on="submit"}} disabled={{model.isSaving}}>
+        </form>
+      {{/a}}`
+    );
+  });
+
   QUnit.todo('can remove during traversal by returning `null`', function(assert) {
     let template = stripIndent`
     <p>here is some multiline string</p>
